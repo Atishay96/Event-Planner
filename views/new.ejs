@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Register</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <script>
+    var x = 1;
+    	$(document).ready(function(){
+    		$("#click_add_input").click(function(){
+    			x++;
+    			console.log(x);
+    			$("#add_input").append("<input type=\"file\" name=\"file\"><br/>");4
+    			document.getElementById("x").value = x;
+    		});
+    		$("#file").change(function(){
+    			document.getElementById("x").value = x;
+    		});
+    	});
+    </script>
+</head>
+	<body>
+	<% include header.ejs %>
+	<center>
+	<br/>
+	<div class="container" style="font-size:20px; width:50%;">
+		<div style="margin:0px 110px 0px 0px; font-size:20px; font-weight:bold;">Upload Images Of the Event</div><br/>
+		<form action="/save" method="POST" enctype="multipart/form-data" class="form-horizontal">
+		<div class="row">
+		
+		<div class="col-sm-6">
+			<input type="file" id="file" name="file"><br/>
+			<div id="add_input"></div>
+		</div>
+		<div class="col-sm-1">
+			<a href="#" style="font-weight:bold;" id="click_add_input">+</a><br/>
+		</div>
+			<div class="form-group">
+				<div class="col-sm-10">
+					<select class="form-control" id="time" name="time">
+						<option value="Concert" id="Concert" name="Concert">Concert</option>
+						<option value="Show" id="Show" name="Show">Show</option>
+						<option value="Party" id="Party" name="Party">Party</option>
+						<option value="Buffet" id="Buffet" name="Buffet">Buffet</option>
+						<option value="xyz" id="xyz" name="xyz">xyz</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-10"> 
+				  <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-10"> 
+				  <input type="text" id="email" name="email" class="form-control" placeholder="Enter Email ID">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-10"> 
+				  <input type="number" id="phone" name="phone" class="form-control" placeholder="Enter Phone Number">
+				</div>
+			</div><br/>
+			<div id="map" style="width:60%;height:300px;margin:0px 100px 0px 0px;"></div><br/>
+			<div class="form-group">
+				<div class="col-sm-10"> 
+				  <input type="text" id="address" name="address" class="form-control" placeholder="Enter Address">
+				</div>
+			</div>
+			<input type="hidden" id="x" name="x" value="0"/>
+			<input type="hidden" id="lat" name="lat" value=""/>
+			<input type="hidden" id="lng" name="lng" value=""/>
+			<br/>
+			<div class="col-sm-10"> 
+				<input type="submit" class="btn btn-success" value="Book" style="width:20%;">
+			</div>
+		</form>
+		</div>
+		
+		<script>
+
+		function myMap() {
+						var myCenter = new google.maps.LatLng(13.0826802,80.2707184);
+					    var mapCanvas = document.getElementById("map");
+					    var mapOptions = {center: myCenter, zoom: 10};
+					    var map = new google.maps.Map(mapCanvas, mapOptions);
+					    var marker = new google.maps.Marker({position:myCenter, draggable:true});
+					  	marker.setMap(map);
+					  	document.getElementById('lat').value = "13.0826802";
+						document.getElementById('lng').value = "80.2707184";
+						var geocoder = new google.maps.Geocoder;
+
+					  	google.maps.event.addListener(marker, 'dragend', function(evt){
+					  		var lat = evt.latLng.lat();
+					  		var lng = evt.latLng.lng();
+					  		document.getElementById('lat').value = lat;
+					  		document.getElementById('lng').value = lng;
+					  		
+					  		geocodeLatLng(geocoder,map,lat,lng);
+						});
+
+						/*google.maps.event.addListener(marker, 'dragstart', function(evt){
+						    document.getElementById('current').innerHTML = '<p>Currently dragging marker...</p>';
+						});*/
+					};
+					function geocodeLatLng(geocoder,map,lat,lng)
+					{
+						var input = lat+","+lng;
+						console.log(input);
+						var latlngStr = input.split(',', 2);
+						var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+						geocoder.geocode({'location': latlng}, function(results, status) {
+				          if (status === 'OK') {
+				          	console.log(results[1].formatted_address);
+				         	console.log(results[0].formatted_address);
+				            if (results[1]) {
+				            	document.getElementById("address").value = results[1].formatted_address;			              
+				            }
+				            else {
+				              window.alert('No results found');
+				            }
+				          } 
+				          else {
+				            window.alert('Geocoder failed due to: ' + status);
+				          }
+				        });
+					}
+					
+		</script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwhlFISkLO1pQEc5lfWf6NW62-OA1VQaQ&callback=myMap"></script>
+		</center>
+	</body>
+</html>
